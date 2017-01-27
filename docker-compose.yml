@@ -1,0 +1,42 @@
+version: '2'
+
+services:
+    db:
+        image: mysql
+        expose:
+            - "3306"
+        volumes:
+            - ./data:/var/lib/mysql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: nk8w7rfU7y8prHe9SWww3za3GbckVDUahdPDkWvSTR4nyTJvCHA4MEQYPymz2sfL
+            MYSQL_DATABASE: sanrafaelDBbF6KXq
+            MYSQL_USER: sanrafaelUserNameg4m6Wb
+            MYSQL_PASSWORD: nfNw9VhbKEPQzLgd6JXvW8T6bNB2sYksAWcd8VVZU7wfTGgUR9h4kBVkT4LqTEV8
+    php:
+        build: ./docker/php-fpm
+        expose:
+            - "9001"
+        volumes:
+            - ./web:/var/www/symfony
+            - ./logs/symfony:/var/www/symfony/var/logs
+        restart: always
+        links:
+            - db
+    tools:
+        build: ./docker/php-tools
+        volumes:
+            - ./web:/var/www/symfony
+        links:
+            - db
+    nginx:
+        build: ./docker/nginx
+        ports:
+            - "8088:80"
+        links:
+            - php
+        volumes_from:
+            - php
+        volumes:
+            - ./logs/nginx/:/var/log/nginx
+        restart: always
